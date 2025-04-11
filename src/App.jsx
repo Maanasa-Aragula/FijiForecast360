@@ -16,7 +16,6 @@ import {
 export default function App() {
   const [selectedTopic, setSelectedTopic] = useState(null);
 
-  // Dummy data per topic
   const chartData = {
     "Air Temperature": [
       { name: "Jan", value: 24 },
@@ -97,16 +96,23 @@ export default function App() {
         );
 
       default:
-
         return <p>No chart available.</p>;
     }
   };
+
   return (
     <div className="w-screen h-screen relative font-sans text-white">
-      {/* Navbar */}
-      <div className="absolute top-0 left-0 right-0 h-14 bg-[#1e293b] flex items-center justify-between px-6 z-50 shadow">
-        <div className="text-lg font-bold">🌴 FijiForecast360</div>
-        <button className="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded text-sm">Login</button>
+      {/* Top Navbar */}
+      <div className="absolute top-0 left-0 right-0 h-20 bg-transparent flex items-center justify-between px-6 z-[1000] pointer-events-none">
+        <h1
+          className="text-white text-5xl font-extrabold font-sans drop-shadow-xl tracking-wide pointer-events-auto"
+          style={{ color: "white" }}
+        >
+          🌴 FijiForecast360
+        </h1>
+        <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white font-medium text-sm shadow-md pointer-events-auto">
+          Login
+        </button>
       </div>
 
       {/* Map */}
@@ -114,7 +120,7 @@ export default function App() {
 
       {/* Data Panel */}
       {selectedTopic && (
-        <div className="fixed inset-0 bg-white text-black p-6 z-[9999] shadow-xl animate-slide-up overflow-auto border-8 border-red-600">
+        <div className="fixed inset-0 bg-white text-black p-6 z-[9999] shadow-xl animate-slide-up overflow-auto">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">{selectedTopic.title}</h2>
             <button

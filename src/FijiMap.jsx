@@ -8,13 +8,13 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect } from "react";
 
-// Map bounds
+// Fiji map bounds to lock panning
 const fijiBounds = [
   [-21.5, 174.5],
   [-15.0, 180.5],
 ];
 
-// Custom icon loader
+// Helper to create custom icons
 const icon = (url) =>
   new L.Icon({
     iconUrl: url,
@@ -22,6 +22,7 @@ const icon = (url) =>
     iconAnchor: [16, 32],
   });
 
+// Marker topics with positions and icons
 const markers = [
   {
     id: "temp",
@@ -56,6 +57,15 @@ const markers = [
 ];
 
 export default function FijiMap({ onSelectTopic }) {
+  useEffect(() => {
+    // Move zoom control down
+    const zoomControl = document.querySelector(".leaflet-control-zoom");
+    if (zoomControl) {
+      zoomControl.style.top = "100px";
+      zoomControl.style.left = "12px";
+    }
+  }, []);
+
   return (
     <MapContainer
       center={[-17.7134, 178.065]}
@@ -72,7 +82,7 @@ export default function FijiMap({ onSelectTopic }) {
     >
       <TileLayer
         url="https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoicmFuamplcyIsImEiOiJjbTlkMGdyYnUweHMwMnFxNDFvbWx1cDJpIn0.ban5sd-vXsT7lZQrXLBPlg"
-        attribution='© <a href="https://www.mapbox.com/">Mapbox</a> © OpenStreetMap contributors'
+        attribution='Map data &copy; <a href="https://www.mapbox.com/">Mapbox</a>, <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
         tileSize={512}
         zoomOffset={-1}
       />
@@ -90,7 +100,7 @@ function MarkerWithZoom({ marker, onSelectTopic }) {
   const map = useMap();
 
   const handleClick = () => {
-    console.log("Marker clicked:", marker.title); 
+    console.log("Marker clicked:", marker.title);
     map.flyTo(marker.position, 13, { duration: 2 });
     onSelectTopic({ title: marker.title, position: marker.position });
   };
