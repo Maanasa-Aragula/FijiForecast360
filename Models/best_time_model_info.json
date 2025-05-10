@@ -1,0 +1,27 @@
+{
+    "model_type": "XGBoost",
+    "features": [
+        "year",
+        "month",
+        "day",
+        "hour",
+        "dayofweek",
+        "weekofyear",
+        "years_since_1950",
+        "sin_hour",
+        "cos_hour",
+        "sin_dayofyear",
+        "cos_dayofyear",
+        "sin_week",
+        "cos_week",
+        "sin_month",
+        "cos_month",
+        "sin_dayofweek",
+        "cos_dayofweek"
+    ],
+    "n_estimators": 500,
+    "max_depth": 12,
+    "learning_rate": 0.05,
+    "std_dev": 1.5655747203749346,
+    "accuracy_percent": 85.20741434839019
+}
