@@ -15,11 +15,12 @@ const fijiBounds = [
 ];
 
 // Helper for custom Leaflet icons
-const icon = (url) =>
-  new L.Icon({
-    iconUrl: url,
+const emojiIcon = (emoji) =>
+  new L.DivIcon({
+    className: "custom-emoji-icon",
+    html: `<div style="font-size: 28px;">${emoji}</div>`,
     iconSize: [32, 32],
-    iconAnchor: [16, 32],
+    iconAnchor: [16, 16],
   });
 
 // Marker data: icons + positions
@@ -28,31 +29,31 @@ const markers = [
     id: "temp",
     title: "Air Temperature",
     position: [-17.7, 178.1],
-    icon: icon("/icons/temperature.png"),
+    icon: emojiIcon("⛅"),
   },
   {
     id: "econ",
     title: "Economic Impact",
     position: [-16.5, 179.0],
-    icon: icon("/icons/economy.png"),
+    icon: emojiIcon("🌿"),
   },
   {
     id: "tourism",
     title: "Tourism",
     position: [-17.6, 177.0],
-    icon: icon("/icons/tourism.png"),
+    icon: emojiIcon("👥"),
   },
   {
     id: "infra",
     title: "Infrastructure",
     position: [-16.85, 179.9],
-    icon: icon("/icons/infrastructure.png"),
+    icon: emojiIcon("🏥"),
   },
   {
     id: "cyclone",
     title: "Cyclone Data",
     position: [-19.0, 178.5],
-    icon: icon("/icons/cyclone.png"),
+    icon: emojiIcon("🛣️"),
   },
 ];
 

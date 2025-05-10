@@ -2,17 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes slide-up {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+/* Make sure the page root is full height */
+html, body, #root {
+  height: 100%;
+  margin: 0;
 }
 
+/* ◼ Gradient background animation */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient-background {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* Fade in/out title */
+@keyframes fade-in-out {
+  0%,100%   { opacity: 0; transform: scale(1) translateY(-10px); }
+  50%,60%   { opacity: 1; transform: scale(1.05) translateY(0); }
+}
+.animate-fade-in-out {
+  animation: fade-in-out 4s ease-in-out infinite;
+}
+
+/* Hover “pop” effect */
+.interactive-title {
+  display: inline-block;
+  transition: transform 200ms ease, text-shadow 200ms ease;
+}
+.interactive-title:hover {
+  transform: scale(1.2);
+  text-shadow: 0 0 8px rgba(255,255,255,0.8);
+  cursor: pointer;
+}
+
+/* Slide-up for info panel */
+@keyframes slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
 .animate-slide-up {
   animation: slide-up 0.5s ease-out forwards;
+}
+
+/* Load bar animation */
+@keyframes load {
+  from { width: 0; }
+  to { width: 100%; }
+}
+.animate-load {
+  animation: load 3s linear forwards;
+}
+
+/* 🌟 NEW: Floating emoji animation */
+@keyframes floating {
+  0%   { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
+  50%  { transform: translateY(-20px) rotate(10deg); opacity: 1; }
+  100% { transform: translateY(0px) rotate(-10deg); opacity: 0.6; }
+}
+.animate-floating {
+  animation: floating 4s ease-in-out infinite;
+  pointer-events: none;
 }

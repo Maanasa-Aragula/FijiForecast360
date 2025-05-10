@@ -1,9 +1,11 @@
-
 import { useState, useEffect } from "react";
 import FijiMap from "./FijiMap";
+import SplashScreen from "./splashscreen";
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
   const [selectedTopic, setSelectedTopic] = useState(null);
+
   const [year, setYear] = useState("2025");
   const [month, setMonth] = useState("01");
   const [day, setDay] = useState("01");
@@ -26,6 +28,11 @@ export default function App() {
     May: "05", Jun: "06", Jul: "07", Aug: "08",
     Sep: "09", Oct: "10", Nov: "11", Dec: "12"
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const numDays = new Date(parseInt(year), parseInt(month), 0).getDate();
@@ -75,16 +82,24 @@ export default function App() {
     }
   };
 
+  if (showSplash) {
+    return <SplashScreen onFinish={() => setShowSplash(false)} />;
+  }
+
   return (
     <div className="w-screen h-screen relative font-sans text-white">
+      {/* Top Navbar with logo */}
       <div className="absolute top-0 left-0 right-0 h-20 bg-transparent flex items-center justify-between px-6 z-[1000] pointer-events-none">
-        <h1 className="text-white text-5xl font-extrabold drop-shadow-xl pointer-events-auto">
-          🌴 FijiForecast360
-        </h1>
+        <img
+          src="/icons/logo.webp"
+          alt="FijiForecast360 Logo"
+          className="h-12 object-contain max-w-[160px] pointer-events-auto"
+        />
       </div>
+
       <FijiMap onSelectTopic={setSelectedTopic} selectedTopic={selectedTopic} />
 
-      {/* Air Temperature panel */}
+      {/* Temperature Panel */}
       {selectedTopic?.title === "Air Temperature" && (
         <div className="absolute z-[9999] text-black p-4 rounded-lg shadow-2xl border border-gray-400 w-96"
           style={{
@@ -130,7 +145,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Infrastructure panel */}
+      {/* Infrastructure Panel */}
       {selectedTopic?.title === "Infrastructure" && (
         <div className="absolute z-[9999] text-black p-4 rounded-lg shadow-2xl border border-gray-400 w-96"
           style={{
@@ -165,111 +180,113 @@ export default function App() {
         </div>
       )}
 
-    {selectedTopic?.title === "Cyclone Data" && (
-      <div className="absolute z-[9999] text-black p-4 rounded-lg shadow-2xl border border-gray-400 w-96 max-h-[75vh] overflow-y-scroll"
+      {/* Cyclone (Environmental) Panel */}
+      {selectedTopic?.title === "Cyclone Data" && (
+        <div className="absolute z-[9999] text-black p-4 rounded-lg shadow-2xl border border-gray-400 w-96 max-h-[75vh] overflow-y-scroll"
           style={{
             backgroundColor: "white",
             top: "60%",
             left: "50%",
             transform: "translate(-50%, -50%)"
           }}>
-        <h2 className="font-bold text-xl mb-3">Environmental Forecast</h2>
-        <select value={year} onChange={(e) => setYear(e.target.value)} className="w-full mb-2 border rounded px-2 py-1">
-          {[...Array(11)].map((_, i) => <option key={i} value={2025 + i}>{2025 + i}</option>)}
-        </select>
+          <h2 className="font-bold text-xl mb-3">Environmental Forecast</h2>
+          <select value={year} onChange={(e) => setYear(e.target.value)} className="w-full mb-2 border rounded px-2 py-1">
+            {[...Array(11)].map((_, i) => <option key={i} value={2025 + i}>{2025 + i}</option>)}
+          </select>
 
-        <button onClick={async () => {
-          const res = await fetch("http://localhost:5000/predict-environment", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ year: parseInt(year), temperature: parseFloat(predictedTemp || 28.5) })
-          });
-          const data = await res.json();
-          setEnvironmentalResults(data);
-          setSelectedEnvParam(Object.keys(data)[0] || "");
-        }} className="w-full py-2 bg-green-700 text-white rounded font-semibold mb-3">
-          Predict Environmental Impact
-        </button>
+          <button onClick={async () => {
+            const res = await fetch("http://localhost:5000/predict-environment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ year: parseInt(year), temperature: parseFloat(predictedTemp || 28.5) })
+            });
+            const data = await res.json();
+            setEnvironmentalResults(data);
+            setSelectedEnvParam(Object.keys(data)[0] || "");
+          }} className="w-full py-2 bg-green-700 text-white rounded font-semibold mb-3">
+            Predict Environmental Impact
+          </button>
 
-        {environmentalResults && (
-          <>
-            <label className="block text-sm font-medium mb-1">Select Parameter:</label>
-            <select value={selectedEnvParam} onChange={(e) => setSelectedEnvParam(e.target.value)}
-                    className="w-full mb-2 border rounded px-2 py-1">
-              {Object.keys(environmentalResults).map((k) => (
-                <option key={k} value={k}>{k}</option>
-              ))}
-            </select>
-            {selectedEnvParam && (
-              <div className="text-sm bg-gray-100 p-2 rounded">
-                <strong>{selectedEnvParam}:</strong> {environmentalResults[selectedEnvParam]}
-              </div>
-            )}
-          </>
-        )}
+          {environmentalResults && (
+            <>
+              <label className="block text-sm font-medium mb-1">Select Parameter:</label>
+              <select value={selectedEnvParam} onChange={(e) => setSelectedEnvParam(e.target.value)}
+                      className="w-full mb-2 border rounded px-2 py-1">
+                {Object.keys(environmentalResults).map((k) => (
+                  <option key={k} value={k}>{k}</option>
+                ))}
+              </select>
+              {selectedEnvParam && (
+                <div className="text-sm bg-gray-100 p-2 rounded">
+                  <strong>{selectedEnvParam}:</strong> {environmentalResults[selectedEnvParam]}
+                </div>
+              )}
+            </>
+          )}
 
-        <button onClick={() => {
-          setSelectedTopic(null);
-          setEnvironmentalResults(null);
-          setSelectedEnvParam("");
-        }} className="mt-3 text-red-600 hover:text-red-800 font-semibold text-sm">
-          ✕ Close
-        </button>
-      </div>
-    )}
-    {selectedTopic?.title === "Economic Impact" && (
-      <div className="absolute z-[9999] text-black p-4 rounded-lg shadow-2xl border border-gray-400 w-96 max-h-[75vh] overflow-y-scroll"
+          <button onClick={() => {
+            setSelectedTopic(null);
+            setEnvironmentalResults(null);
+            setSelectedEnvParam("");
+          }} className="mt-3 text-red-600 hover:text-red-800 font-semibold text-sm">
+            ✕ Close
+          </button>
+        </div>
+      )}
+
+      {/* Economic Panel */}
+      {selectedTopic?.title === "Economic Impact" && (
+        <div className="absolute z-[9999] text-black p-4 rounded-lg shadow-2xl border border-gray-400 w-96 max-h-[75vh] overflow-y-scroll"
           style={{
             backgroundColor: "white",
             top: "60%",
             left: "50%",
             transform: "translate(-50%, -50%)"
           }}>
-        <h2 className="font-bold text-xl mb-3">Economic Forecast</h2>
-        <select value={year} onChange={(e) => setYear(e.target.value)} className="w-full mb-2 border rounded px-2 py-1">
-          {[...Array(11)].map((_, i) => <option key={i} value={2025 + i}>{2025 + i}</option>)}
-        </select>
+          <h2 className="font-bold text-xl mb-3">Economic Forecast</h2>
+          <select value={year} onChange={(e) => setYear(e.target.value)} className="w-full mb-2 border rounded px-2 py-1">
+            {[...Array(11)].map((_, i) => <option key={i} value={2025 + i}>{2025 + i}</option>)}
+          </select>
 
-        <button onClick={async () => {
-          const res = await fetch("http://localhost:5000/predict-economy", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ year: parseInt(year) })
-          });
-          const data = await res.json();
-          setEconomicResults(data);
-          setSelectedEconParam(Object.keys(data)[0] || "");
-        }} className="w-full py-2 bg-blue-600 text-white rounded font-semibold mb-3">
-          Predict Economic Indicators
-        </button>
+          <button onClick={async () => {
+            const res = await fetch("http://localhost:5000/predict-economy", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ year: parseInt(year) })
+            });
+            const data = await res.json();
+            setEconomicResults(data);
+            setSelectedEconParam(Object.keys(data)[0] || "");
+          }} className="w-full py-2 bg-blue-600 text-white rounded font-semibold mb-3">
+            Predict Economic Indicators
+          </button>
 
-        {economicResults && (
-          <>
-            <label className="block text-sm font-medium mb-1">Select Parameter:</label>
-            <select value={selectedEconParam} onChange={(e) => setSelectedEconParam(e.target.value)}
-                    className="w-full mb-2 border rounded px-2 py-1">
-              {Object.keys(economicResults).map((k) => (
-                <option key={k} value={k}>{k}</option>
-              ))}
-            </select>
-            {selectedEconParam && (
-              <div className="text-sm bg-gray-100 p-2 rounded">
-                <strong>{selectedEconParam}:</strong> {economicResults[selectedEconParam]}
-              </div>
-            )}
-          </>
-        )}
+          {economicResults && (
+            <>
+              <label className="block text-sm font-medium mb-1">Select Parameter:</label>
+              <select value={selectedEconParam} onChange={(e) => setSelectedEconParam(e.target.value)}
+                      className="w-full mb-2 border rounded px-2 py-1">
+                {Object.keys(economicResults).map((k) => (
+                  <option key={k} value={k}>{k}</option>
+                ))}
+              </select>
+              {selectedEconParam && (
+                <div className="text-sm bg-gray-100 p-2 rounded">
+                  <strong>{selectedEconParam}:</strong> {economicResults[selectedEconParam]}
+                </div>
+              )}
+            </>
+          )}
 
-        <button onClick={() => {
-          setSelectedTopic(null);
-          setEconomicResults(null);
-          setSelectedEconParam("");
-        }} className="mt-3 text-red-600 hover:text-red-800 font-semibold text-sm">
-          ✕ Close
-        </button>
-      </div>
-    )}
-
+          <button onClick={() => {
+            setSelectedTopic(null);
+            setEconomicResults(null);
+            setSelectedEconParam("");
+          }} className="mt-3 text-red-600 hover:text-red-800 font-semibold text-sm">
+            ✕ Close
+          </button>
+        </div>
+      )}
     </div>
   );
 }
