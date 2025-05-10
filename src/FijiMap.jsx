@@ -8,13 +8,13 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect } from "react";
 
-// Fiji map bounds to lock panning
+// Fiji bounds to restrict panning
 const fijiBounds = [
   [-21.5, 174.5],
   [-15.0, 180.5],
 ];
 
-// Helper to create custom icons
+// Helper for custom Leaflet icons
 const icon = (url) =>
   new L.Icon({
     iconUrl: url,
@@ -22,7 +22,7 @@ const icon = (url) =>
     iconAnchor: [16, 32],
   });
 
-// Marker topics with positions and icons
+// Marker data: icons + positions
 const markers = [
   {
     id: "temp",
@@ -56,9 +56,8 @@ const markers = [
   },
 ];
 
-export default function FijiMap({ onSelectTopic }) {
+export default function FijiMap({ onSelectTopic, selectedTopic }) {
   useEffect(() => {
-    // Move zoom control down
     const zoomControl = document.querySelector(".leaflet-control-zoom");
     if (zoomControl) {
       zoomControl.style.top = "100px";
@@ -91,7 +90,7 @@ export default function FijiMap({ onSelectTopic }) {
         <MarkerWithZoom key={i} marker={marker} onSelectTopic={onSelectTopic} />
       ))}
 
-      <SnapBackToFiji />
+      <SnapBackToFiji selectedTopic={selectedTopic} />
     </MapContainer>
   );
 }
@@ -114,26 +113,16 @@ function MarkerWithZoom({ marker, onSelectTopic }) {
   );
 }
 
-function SnapBackToFiji() {
+function SnapBackToFiji({ selectedTopic }) {
   const map = useMap();
 
   useEffect(() => {
-    let lastValidCenter = map.getCenter();
-
-    const handleMove = () => {
-      const bounds = map.getBounds();
-      if (!bounds.contains(lastValidCenter)) {
-        setTimeout(() => {
-          map.flyTo([-17.7134, 178.065], 8, { duration: 2 });
-        }, 15000);
-      } else {
-        lastValidCenter = map.getCenter();
-      }
-    };
-
-    map.on("moveend", handleMove);
-    return () => map.off("moveend", handleMove);
-  }, [map]);
+    if (!selectedTopic) {
+      setTimeout(() => {
+        map.flyTo([-17.7134, 178.065], 8, { duration: 2 });
+      }, 300);
+    }
+  }, [selectedTopic]);
 
   return null;
 }
